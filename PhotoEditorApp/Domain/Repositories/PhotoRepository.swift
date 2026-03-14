@@ -8,6 +8,6 @@
 import Foundation
 
 protocol PhotoRepository {
-    func saveToLibrary(photo: PhotoEntity, completion: @escaping (Result<Void, Error>) -> Void)
+    func saveToLibrary(photo: PhotoEntity) async throws
 }
 

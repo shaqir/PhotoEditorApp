@@ -8,7 +8,7 @@
 import Foundation
 
 protocol SavePhotoUseCase {
-  func execute(photo: PhotoEntity, completion: @escaping (Result<Void, Error>) -> Void)
+  func execute(photo: PhotoEntity) async throws
 }
 
 final class SavePhotoUseCaseImpl: SavePhotoUseCase {
@@ -18,7 +18,7 @@ final class SavePhotoUseCaseImpl: SavePhotoUseCase {
     self.photoRepository = photoRepository
   }
 
-  func execute(photo: PhotoEntity, completion: @escaping (Result<Void, Error>) -> Void) {
-    photoRepository.saveToLibrary(photo: photo, completion: completion)
+  func execute(photo: PhotoEntity) async throws {
+    try await photoRepository.saveToLibrary(photo: photo)
   }
 }

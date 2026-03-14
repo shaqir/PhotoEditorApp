@@ -15,7 +15,7 @@ protocol PhotoEditorViewModel: Observable, AnyObject {
 
   func setPhoto(image: UIImage)
   func applyFilter()
-  func savePhoto()
+  func savePhoto() async
 }
 
 @Observable
@@ -53,24 +53,21 @@ final class PhotoEditorViewModelImpl: PhotoEditorViewModel {
     }
   }
 
-  func savePhoto() {
+  @MainActor
+  func savePhoto() async {
     guard let photo = photo else { return }
     isLoading = true
     error = nil
     saveMessage = nil
-    savePhotoUseCase.execute(photo: photo) { [weak self] result in
-      DispatchQueue.main.async {
-        self?.isLoading = false
-        switch result {
-        case .success:
-          self?.saveMessage = "Saved to Photos!"
-          DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            self?.saveMessage = nil
-          }
-        case .failure(let err):
-          self?.error = err
-        }
-      }
+    do {
+      try await savePhotoUseCase.execute(photo: photo)
+      isLoading = false
+      saveMessage = "Saved to Photos!"
+      try? await Task.sleep(for: .seconds(2))
+      saveMessage = nil
+    } catch {
+      isLoading = false
+      self.error = error
     }
   }
 }

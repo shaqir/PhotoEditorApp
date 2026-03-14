@@ -7,10 +7,15 @@
 
 import Foundation
 
+/// Domain errors for photo editing and save operations.
 enum PhotoError: Error, LocalizedError {
+  /// No photo has been selected by the user.
   case noPhoto
+  /// Photo could not be converted to a CIImage for filtering.
   case invalidFormat
+  /// An unrecoverable internal error occurred.
   case unknown
+  /// Photo library write failed (permissions or disk).
   case saveFailed
 
   var errorDescription: String? {

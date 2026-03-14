@@ -33,7 +33,7 @@ struct PhotoEditorView<ViewModel: PhotoEditorViewModelImpl>: View {
         .disabled(model.photo == nil)
 
         Button("Save to Photos") {
-          model.savePhoto()
+          Task { await model.savePhoto() }
         }
         .disabled(model.photo == nil || model.isLoading)
       }

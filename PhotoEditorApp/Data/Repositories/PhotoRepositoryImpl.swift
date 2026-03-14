@@ -10,11 +10,15 @@ import UIKit
 final class PhotoRepositoryImpl: NSObject, PhotoRepository {
   private var completion: ((Result<Void, Error>) -> Void)?
 
-  func saveToLibrary(photo: PhotoEntity, completion: @escaping (Result<Void, Error>) -> Void) {
-    self.completion = completion
-    UIImageWriteToSavedPhotosAlbum(
-      photo.image, self,
-      #selector(saveImageCompletionHandler(_:didFinishSavingWithError:contextInfo:)), nil)
+  func saveToLibrary(photo: PhotoEntity) async throws {
+    try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+      self.completion = { result in
+        continuation.resume(with: result)
+      }
+      UIImageWriteToSavedPhotosAlbum(
+        photo.image, self,
+        #selector(saveImageCompletionHandler(_:didFinishSavingWithError:contextInfo:)), nil)
+    }
   }
 
   @objc private func saveImageCompletionHandler(
